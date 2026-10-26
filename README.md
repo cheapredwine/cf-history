@@ -6,9 +6,10 @@ Cloudflare account as expose it, and writes a JSON + CSV report.
 Almost no Cloudflare object API returns *who* made the last change, so this
 tool works in two passes:
 
-1. **Inventory pass** — walks ~35 endpoints (zones, DNS, WAF, Workers, storage,
-   Pages, Zero Trust, SSL, registrar, …) collecting every object that exposes a
-   timestamp (`modified_on`, `last_updated`, `updated_at`, `creation_date`, …).
+1. **Inventory pass** — walks **54 collectors** across the Cloudflare API
+   (zones, DNS, WAF, Workers, storage, Pages, Zero Trust Access/Gateway/DLP/Devices,
+   API Gateway, Waiting Rooms, SSL, registrar, …) collecting every object that
+   exposes a timestamp (`modified_on`, `last_updated`, `updated_at`, `creation_date`, …).
    Field names differ per product, so timestamps are extracted generically.
 2. **Audit pass** — fetches [Audit Logs v2](https://developers.cloudflare.com/fundamentals/account/account-security/audit-logs/)
    (`GET /accounts/{id}/logs/audit`, ~18 months retention, ~95% product
@@ -53,22 +54,28 @@ Then add what you want covered — everything is optional and detected per-run:
 | DNS **Read** | DNS records (incl. `created_by`/`modified_by` where exposed) |
 | Zone WAF **Read** / Account WAF **Read** / Account Rulesets **Read** | WAF rulesets + rules (`last_updated` at ruleset *and* rule level) |
 | Zone Firewall Services / Firewall Access Rules **Read** | legacy firewall rules, IP access rules |
-| Workers Scripts **Read** | Workers, routes, DO namespaces, cron triggers |
+| Workers Scripts **Read** | Workers scripts, domains, dispatch namespaces, Workflows, DO namespaces, cron triggers |
 | Workers KV Storage **Read** | KV namespaces (no timestamps — audit fills in) |
 | Workers R2 Storage **Read** | R2 buckets via the Cloudflare API |
 | D1 **Read** | D1 databases |
 | Queues **Read** | Queues |
 | Hyperdrive **Read** | Hyperdrive configs |
+| Vectorize **Read** | Vectorize indexes |
 | Cloudflare Pages **Read** | Pages projects + deployments (commit author via `deployment_trigger`) |
-| Access: Apps and Policies **Read**, Service Tokens **Read**, Identity Providers **Read** | Access apps, service tokens, IdPs, bookmarks |
+| Access: Apps and Policies **Read** | Access apps, groups, policies, bookmarks, MCP portals/servers |
+| Access: Service Tokens **Read** | Access service tokens |
+| Access: Identity Providers **Read** | Access identity providers |
+| Access: Organizations **Read** | Access certificates |
+| Zero Trust **Read** | Gateway lists/locations/certificates/rules, DLP profiles/patterns/datasets, Device posture rules |
 | Cloudflare Tunnel **Read** | tunnels (+ last connection time) |
+| API Gateway **Read** | API operations, discovered operations |
+| Zone Waiting Room **Read** | Waiting rooms |
 | Load Balancing **Read** | pools, monitors, zone load balancers |
 | SSL and Certificates **Read** | certificate packs, custom certificates |
 | Cloudflare for SaaS **Read** | custom hostnames |
 | Domain Registration **Read** | registrar domains |
 | Stream **Read** | Stream videos |
 | Turnstile **Read** | widgets |
-| Vectorize **Read** | indexes |
 | Account API Tokens **Read** | account-owned API tokens (+ last used) |
 
 Zone-scoped permissions can be limited to the account's zones.

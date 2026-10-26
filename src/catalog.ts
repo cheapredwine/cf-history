@@ -418,24 +418,48 @@ function tunnelNotes(o: any): string | null {
 
 export function buildCollectors(): Collector[] {
   const accountSpecs: Array<Omit<ListSpec, "scope" | "path"> & { pathTemplate: string }> = [
+    // Workers
     { id: "workers_scripts", label: "Workers scripts", domain: "Workers", objectType: "Worker script", permissionHint: "Workers scripts read", pathTemplate: "/accounts/%A/workers/scripts" },
     { id: "workers_domains", label: "Workers custom domains", domain: "Workers", objectType: "Worker custom domain", permissionHint: "Workers scripts read", pathTemplate: "/accounts/%A/workers/domains", notes: (o) => (o?.zone_name ? `zone=${o.zone_name} service=${o.service ?? "?"}` : null) },
+    { id: "workers_dispatch_namespaces", label: "Workers dispatch namespaces", domain: "Workers", objectType: "Workers dispatch namespace", permissionHint: "Workers scripts read", pathTemplate: "/accounts/%A/workers/dispatch/namespaces" },
+    { id: "workers_workflows", label: "Workers Workflows", domain: "Workers", objectType: "Workflow", permissionHint: "Workers scripts read", pathTemplate: "/accounts/%A/workflows" },
     { id: "durable_objects_namespaces", label: "Durable Object namespaces", domain: "Workers", objectType: "Durable Object namespace", permissionHint: "Workers scripts read", pathTemplate: "/accounts/%A/workers/durable_objects/namespaces" },
+    // Storage & Data
     { id: "queues", label: "Queues", domain: "Queues", objectType: "Queue", permissionHint: "Queues read", pathTemplate: "/accounts/%A/queues" },
     { id: "hyperdrive_configs", label: "Hyperdrive configs", domain: "Hyperdrive", objectType: "Hyperdrive config", permissionHint: "Hyperdrive read", pathTemplate: "/accounts/%A/hyperdrive/configs" },
     { id: "d1_databases", label: "D1 databases", domain: "D1", objectType: "D1 database", permissionHint: "D1 read", pathTemplate: "/accounts/%A/d1/database" },
     { id: "kv_namespaces", label: "KV namespaces", domain: "Storage", objectType: "KV namespace", permissionHint: "Workers KV Storage read", pathTemplate: "/accounts/%A/storage/kv/namespaces" },
+    { id: "vectorize_indexes", label: "Vectorize indexes", domain: "Vectorize", objectType: "Vectorize index", permissionHint: "Vectorize read", pathTemplate: "/accounts/%A/vectorize/v2/indexes", unwrap: (r) => (Array.isArray(r) ? r : ((r as any)?.indexes ?? (r as any)?.result ?? [])) },
+    // Zero Trust Access
     { id: "access_apps", label: "Access applications", domain: "Zero Trust", objectType: "Access application", permissionHint: "Access: apps and policies read", pathTemplate: "/accounts/%A/access/apps" },
+    { id: "access_groups", label: "Access groups", domain: "Zero Trust", objectType: "Access group", permissionHint: "Access: apps and policies read", pathTemplate: "/accounts/%A/access/groups" },
+    { id: "access_policies", label: "Access policies", domain: "Zero Trust", objectType: "Access policy", permissionHint: "Access: apps and policies read", pathTemplate: "/accounts/%A/access/policies" },
     { id: "access_service_tokens", label: "Access service tokens", domain: "Zero Trust", objectType: "Access service token", permissionHint: "Access: service tokens read", pathTemplate: "/accounts/%A/access/service_tokens", notes: (o) => (o?.expires_at ? `expires=${o.expires_at}` : null) },
     { id: "access_identity_providers", label: "Access identity providers", domain: "Zero Trust", objectType: "Access identity provider", permissionHint: "Access: identity providers read", pathTemplate: "/accounts/%A/access/identity_providers" },
     { id: "access_bookmarks", label: "Access bookmarks", domain: "Zero Trust", objectType: "Access bookmark", permissionHint: "Access: apps and policies read", pathTemplate: "/accounts/%A/access/bookmarks" },
+    { id: "access_certificates", label: "Access certificates", domain: "Zero Trust", objectType: "Access certificate", permissionHint: "Access: organizations read", pathTemplate: "/accounts/%A/access/certificates" },
+    { id: "access_mcp_portals", label: "Access MCP portals", domain: "Zero Trust", objectType: "MCP portal", permissionHint: "Access: apps and policies read", pathTemplate: "/accounts/%A/access/ai-controls/mcp/portals" },
+    { id: "access_mcp_servers", label: "Access MCP servers", domain: "Zero Trust", objectType: "MCP server", permissionHint: "Access: apps and policies read", pathTemplate: "/accounts/%A/access/ai-controls/mcp/servers" },
+    // Zero Trust Gateway
+    { id: "gateway_lists", label: "Gateway lists", domain: "Zero Trust", objectType: "Gateway list", permissionHint: "Zero Trust read", pathTemplate: "/accounts/%A/gateway/lists" },
+    { id: "gateway_locations", label: "Gateway locations", domain: "Zero Trust", objectType: "Gateway location", permissionHint: "Zero Trust read", pathTemplate: "/accounts/%A/gateway/locations" },
+    { id: "gateway_certificates", label: "Gateway certificates", domain: "Zero Trust", objectType: "Gateway certificate", permissionHint: "Zero Trust read", pathTemplate: "/accounts/%A/gateway/certificates" },
+    { id: "gateway_rules", label: "Gateway rules", domain: "Zero Trust", objectType: "Gateway rule", permissionHint: "Zero Trust read", pathTemplate: "/accounts/%A/gateway/rules" },
+    // Zero Trust DLP
+    { id: "dlp_profiles", label: "DLP profiles", domain: "Zero Trust", objectType: "DLP profile", permissionHint: "Zero Trust read", pathTemplate: "/accounts/%A/dlp/profiles" },
+    { id: "dlp_patterns", label: "DLP patterns", domain: "Zero Trust", objectType: "DLP pattern", permissionHint: "Zero Trust read", pathTemplate: "/accounts/%A/dlp/patterns" },
+    { id: "dlp_datasets", label: "DLP datasets", domain: "Zero Trust", objectType: "DLP dataset", permissionHint: "Zero Trust read", pathTemplate: "/accounts/%A/dlp/datasets" },
+    // Zero Trust Devices
+    { id: "devices_posture", label: "Device posture rules", domain: "Zero Trust", objectType: "Device posture rule", permissionHint: "Zero Trust read", pathTemplate: "/accounts/%A/devices/posture" },
+    // Tunnels
     { id: "cfd_tunnels", label: "Cloudflare Tunnels", domain: "Zero Trust", objectType: "Cloudflare Tunnel", permissionHint: "Cloudflare Tunnel read", pathTemplate: "/accounts/%A/cfd_tunnel", params: { is_deleted: "false" }, notes: tunnelNotes },
+    // Load Balancing
     { id: "lb_pools", label: "Load balancer pools", domain: "Load Balancing", objectType: "LB pool", permissionHint: "Load balancing read", pathTemplate: "/accounts/%A/load_balancers/pools" },
     { id: "lb_monitors", label: "Load balancer monitors", domain: "Load Balancing", objectType: "LB monitor", permissionHint: "Load balancing read", pathTemplate: "/accounts/%A/load_balancers/monitors" },
+    // Other services
     { id: "registrar_domains", label: "Registrar domains", domain: "Registrar", objectType: "Registered domain", permissionHint: "Domain registration read", pathTemplate: "/accounts/%A/registrar/domains" },
     { id: "stream_videos", label: "Stream videos", domain: "Stream", objectType: "Stream video", permissionHint: "Stream read", pathTemplate: "/accounts/%A/stream", unwrap: (r) => (Array.isArray(r) ? r : ((r as any)?.videos ?? (r as any)?.result ?? [])) },
     { id: "turnstile_widgets", label: "Turnstile widgets", domain: "Turnstile", objectType: "Turnstile widget", permissionHint: "Turnstile read", pathTemplate: "/accounts/%A/challenges/widgets" },
-    { id: "vectorize_indexes", label: "Vectorize indexes", domain: "Vectorize", objectType: "Vectorize index", permissionHint: "Vectorize read", pathTemplate: "/accounts/%A/vectorize/v2/indexes", unwrap: (r) => (Array.isArray(r) ? r : ((r as any)?.indexes ?? (r as any)?.result ?? [])) },
     { id: "account_api_tokens", label: "Account API tokens", domain: "Account", objectType: "Account API token", permissionHint: "Account API tokens read", pathTemplate: "/accounts/%A/tokens", notes: (o) => appendNote(o?.status ? `status=${o.status}` : null, o?.last_used_on ? `last_used=${o.last_used_on}` : null) },
   ];
 
@@ -448,13 +472,24 @@ export function buildCollectors(): Collector[] {
   );
 
   const zoneSpecs: Array<Omit<ListSpec, "scope" | "path"> & { pathTemplate: string }> = [
+    // DNS
     { id: "dns_records", label: "DNS records", domain: "DNS", objectType: "DNS record", permissionHint: "DNS read", pathTemplate: "/zones/%Z/dns_records" },
+    // Firewall (legacy)
     { id: "firewall_rules", label: "Firewall rules (legacy)", domain: "Firewall", objectType: "Firewall rule", permissionHint: "Zone firewall read", pathTemplate: "/zones/%Z/firewall/rules" },
     { id: "firewall_access_rules", label: "IP access rules (zone)", domain: "Firewall", objectType: "IP access rule", permissionHint: "Zone firewall access rules read", pathTemplate: "/zones/%Z/firewall/access_rules/rules" },
     { id: "rate_limits", label: "Rate limit rules (legacy)", domain: "Firewall", objectType: "Rate limit rule", permissionHint: "Zone rate limiting read", pathTemplate: "/zones/%Z/rate_limits" },
+    // Rules
     { id: "page_rules", label: "Page rules", domain: "Rules", objectType: "Page rule", permissionHint: "Page rules read", pathTemplate: "/zones/%Z/pagerules" },
+    // API Gateway
+    { id: "api_gateway_operations", label: "API Gateway operations", domain: "API Gateway", objectType: "API operation", permissionHint: "API Gateway read", pathTemplate: "/zones/%Z/api_gateway/operations" },
+    { id: "api_gateway_discovery", label: "API Gateway discovered operations", domain: "API Gateway", objectType: "Discovered API operation", permissionHint: "API Gateway read", pathTemplate: "/zones/%Z/api_gateway/discovery/operations" },
+    // Waiting Rooms
+    { id: "waiting_rooms", label: "Waiting rooms", domain: "Waiting Rooms", objectType: "Waiting room", permissionHint: "Zone waiting room read", pathTemplate: "/zones/%Z/waiting_rooms" },
+    // Load Balancing
     { id: "zone_load_balancers", label: "Zone load balancers", domain: "Load Balancing", objectType: "Load balancer", permissionHint: "Load balancing read", pathTemplate: "/zones/%Z/load_balancers" },
+    // Workers
     { id: "workers_routes", label: "Workers routes", domain: "Workers", objectType: "Workers route", permissionHint: "Workers routes read", pathTemplate: "/zones/%Z/workers/routes", notes: (o) => (o?.pattern ? `pattern=${o.pattern} script=${o.script ?? "?"}` : null) },
+    // SaaS & SSL
     { id: "custom_hostnames", label: "Custom hostnames (SaaS)", domain: "SaaS", objectType: "Custom hostname", permissionHint: "Cloudflare for SaaS read", pathTemplate: "/zones/%Z/custom_hostnames" },
     { id: "ssl_certificate_packs", label: "SSL certificate packs", domain: "SSL", objectType: "SSL certificate pack", permissionHint: "SSL and certificates read", pathTemplate: "/zones/%Z/ssl/certificate_packs" },
     { id: "ssl_custom_certificates", label: "Custom certificates", domain: "SSL", objectType: "Custom SSL certificate", permissionHint: "SSL and certificates read", pathTemplate: "/zones/%Z/custom_certificates" },
