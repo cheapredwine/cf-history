@@ -1,0 +1,6 @@
+node_modules/
+*.log
+.env
+test/out/
+cf-history-*.json
+cf-history-*.csv

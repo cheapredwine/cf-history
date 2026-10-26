@@ -1,0 +1,20 @@
+{
+  "name": "cf-history",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Pull last-modified / last-modified-by metadata for as many objects in a Cloudflare account as expose it",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "test:e2e": "node test/e2e.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
