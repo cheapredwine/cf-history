@@ -1,5 +1,10 @@
 # cf-history
 
+> ⚠️ **NOT OFFICIAL CLOUDFLARE.** Not affiliated with or endorsed by Cloudflare, Inc.
+> NO WARRANTIES, EXPRESS OR IMPLIED. Effectively untested demo code — read everything
+> and dry-run before you run. You assume all risk. See [DISCLAIMER.md](./DISCLAIMER.md).
+
+
 Pulls **last-modified / last-modified-by** metadata for as many objects in a
 Cloudflare account as expose it, and writes a JSON + CSV report.
 
