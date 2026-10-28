@@ -1,0 +1,19 @@
+README.md
+  s_8ec2aeca2a543d::t_6ddf178078bcbe 14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "e7e3fb4cc03380acbd8fb0eea424080d94e331f6",
+  "prompts": {},
+  "sessions": {
+    "s_8ec2aeca2a543d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_e7bd90a05ffeoW3ueIuzV6mc7Z",
+        "model": "unknown"
+      },
+      "human_author": "Jason Sherron <jason@sherron.com>"
+    }
+  }
+}
