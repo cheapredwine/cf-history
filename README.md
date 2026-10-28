@@ -11,7 +11,7 @@ Cloudflare account as expose it, and writes a JSON + CSV report.
 Almost no Cloudflare object API returns *who* made the last change, so this
 tool works in two passes:
 
-1. **Inventory pass** — walks **54 collectors** across the Cloudflare API
+1. **Inventory pass** — walks **53 collectors** across the Cloudflare API
    (zones, DNS, WAF, Workers, storage, Pages, Zero Trust Access/Gateway/DLP/Devices,
    API Gateway, Waiting Rooms, SSL, registrar, …) collecting every object that
    exposes a timestamp (`modified_on`, `last_updated`, `updated_at`, `creation_date`, …).
